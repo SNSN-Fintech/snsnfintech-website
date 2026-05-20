@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import './Hero.css'
 
 function Hero() {
   const [loanAmount, setLoanAmount] = useState(650000)
-  const [savings, setSavings] = useState({ monthly: 0, total: 0, rate: 0 })
 
-  useEffect(() => {
-    // Simulated savings calculation
+  const savings = useMemo(() => {
     const avgBankRate = 6.45
     const brokerRate = 5.89
     const diff = avgBankRate - brokerRate
-    const monthlyPaymentDiff = Math.round((loanAmount * (diff / 100)) / 12)
-    const totalSavings = monthlyPaymentDiff * 30 * 12
-    setSavings({ monthly: monthlyPaymentDiff, total: totalSavings, rate: brokerRate })
+    const monthly = Math.round((loanAmount * (diff / 100)) / 12)
+    const total = monthly * 30 * 12
+    return { monthly, total, rate: brokerRate }
   }, [loanAmount])
 
   return (

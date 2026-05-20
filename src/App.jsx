@@ -1,12 +1,15 @@
+import { lazy, Suspense } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import TrustBar from './components/TrustBar'
-import Services from './components/Services'
-import About from './components/About'
-import Process from './components/Process'
-import CTA from './components/CTA'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+
+// Lazy load below-the-fold components
+const TrustBar = lazy(() => import('./components/TrustBar'))
+const Services = lazy(() => import('./components/Services'))
+const About = lazy(() => import('./components/About'))
+const Process = lazy(() => import('./components/Process'))
+const CTA = lazy(() => import('./components/CTA'))
+const Contact = lazy(() => import('./components/Contact'))
+const Footer = lazy(() => import('./components/Footer'))
 
 function App() {
   return (
@@ -14,14 +17,18 @@ function App() {
       <Header />
       <main>
         <Hero />
-        <TrustBar />
-        <Services />
-        <About />
-        <Process />
-        <CTA />
-        <Contact />
+        <Suspense fallback={null}>
+          <TrustBar />
+          <Services />
+          <About />
+          <Process />
+          <CTA />
+          <Contact />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </>
   )
 }
