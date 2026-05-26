@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import Banner from './components/Banner'
 import Header from './components/Header'
 import Hero from './components/Hero'
 
@@ -14,6 +15,7 @@ const Footer = lazy(() => import('./components/Footer'))
 function App() {
   return (
     <>
+      <Banner />
       <Header />
       <main>
         <Hero />

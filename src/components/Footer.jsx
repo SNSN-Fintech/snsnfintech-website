@@ -58,11 +58,11 @@ function Footer() {
           </div>
         </div>
         <div className="footer__bottom">
-          <p>&copy; 2026 SNSN Fintech Pty Ltd. All rights reserved. ABN 12 345 678 901.</p>
+          <p>&copy; 2026 SNSN Fintech Pty Ltd. All rights reserved.</p>
           <p className="footer__disclaimer">
-            SNSN Fintech Pty Ltd is an authorised mortgage broker holding an Australian Credit Licence (ACL) issued by ASIC.
+            SNSN Fintech Pty Ltd is an authorised mortgage broker holding an Australian Credit Licence (ACL 491521) issued by ASIC.
             Based in Melbourne, serving clients Australia-wide.
-            Credit Representative Number 123456. This page provides general information only and
+            This page provides general information only and
             does not constitute financial advice. Full credit guide and terms available on request.
           </p>
         </div>
