@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './Contact.css'
 
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
+
 function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -9,16 +11,50 @@ function Contact() {
     service: '',
     message: '',
   })
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState('idle') // idle | submitting | success | error
+  const [errorMsg, setErrorMsg] = useState('')
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setFormData({ name: '', email: '', phone: '', service: '', message: '' })
+    setStatus('submitting')
+    setErrorMsg('')
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `New Mortgage Broker Enquiry from ${formData.name}`,
+          from_name: 'SNSN Fintech Website',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.service,
+          message: formData.message,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setStatus('success')
+        setFormData({ name: '', email: '', phone: '', service: '', message: '' })
+      } else {
+        setStatus('error')
+        setErrorMsg(result.message || 'Something went wrong. Please try again.')
+      }
+    } catch (err) {
+      setStatus('error')
+      setErrorMsg('Network error. Please check your connection and try again.')
+    }
   }
 
   return (
@@ -31,17 +67,20 @@ function Contact() {
         </div>
         <div className="contact__grid">
           <div className="contact__form-wrapper">
-            {submitted ? (
+            {status === 'success' ? (
               <div className="contact__success">
                 <div className="contact__success-icon">✓</div>
                 <h3>Thank You!</h3>
                 <p>A mortgage broker from our team will be in touch within 24 hours.</p>
-                <button className="btn btn-primary" onClick={() => setSubmitted(false)}>
+                <button className="btn btn-primary" onClick={() => setStatus('idle')}>
                   Send Another Message
                 </button>
               </div>
             ) : (
               <form className="contact__form" onSubmit={handleSubmit}>
+                {/* Web3Forms honeypot for spam protection */}
+                <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+
                 <div className="contact__form-row">
                   <div className="contact__field">
                     <label htmlFor="name">Full Name *</label>
@@ -84,12 +123,12 @@ function Contact() {
                     <label htmlFor="service">What do you need a mortgage broker for?</label>
                     <select id="service" name="service" value={formData.service} onChange={handleChange}>
                       <option value="">Select a service</option>
-                      <option value="first-home">First Home Purchase</option>
-                      <option value="refinance">Refinancing</option>
-                      <option value="investment">Investment Property</option>
-                      <option value="construction">Construction Loan</option>
-                      <option value="commercial">Commercial Loan</option>
-                      <option value="pre-approval">Pre-Approval Only</option>
+                      <option value="First Home Purchase">First Home Purchase</option>
+                      <option value="Refinancing">Refinancing</option>
+                      <option value="Investment Property">Investment Property</option>
+                      <option value="Construction Loan">Construction Loan</option>
+                      <option value="Commercial Loan">Commercial Loan</option>
+                      <option value="Pre-Approval Only">Pre-Approval Only</option>
                     </select>
                   </div>
                 </div>
@@ -101,14 +140,30 @@ function Contact() {
                     rows="4"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="E.g. I'm looking to buy my first home in Sydney around $800k..."
+                    placeholder="E.g. I'm looking to buy my first home in Melbourne around $800k..."
                   />
                 </div>
-                <button type="submit" className="btn btn-primary">
-                  Request Mortgage Broker Callback
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+
+                {status === 'error' && (
+                  <div className="contact__error">
+                    <p>{errorMsg}</p>
+                  </div>
+                )}
+
+                <button type="submit" className="btn btn-primary" disabled={status === 'submitting'}>
+                  {status === 'submitting' ? (
+                    <>
+                      <span className="contact__spinner" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Request Mortgage Broker Callback
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </>
+                  )}
                 </button>
                 <p className="contact__form-note">
                   Your mortgage broker will call you within 24 hours. No spam, no obligation.
