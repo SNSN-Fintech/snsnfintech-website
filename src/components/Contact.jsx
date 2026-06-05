@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import './Contact.css'
 
-const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
+// Form endpoint — proxied through Cloudflare Worker (key never exposed to browser)
+const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || 'https://snsn-fintech-form.workers.dev'
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -24,16 +25,13 @@ function Contact() {
     setErrorMsg('')
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch(FORM_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          subject: `New Mortgage Broker Enquiry from ${formData.name}`,
-          from_name: 'SNSN Fintech Website',
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
