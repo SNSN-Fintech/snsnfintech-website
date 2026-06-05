@@ -1,9 +1,0 @@
-name = "snsn-fintech-form"
-main = "worker.js"
-compatibility_date = "2024-01-01"
-
-[vars]
-# Non-secret vars go here (none needed)
-
-# Secrets are set via: wrangler secret put WEB3FORMS_KEY
-# Never put secrets in this file
